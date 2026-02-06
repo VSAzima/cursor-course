@@ -25,6 +25,7 @@ const ToggleSwitch = ({ label, description, checked, onChange, id }: ToggleSwitc
         type="button"
         role="switch"
         aria-checked={checked}
+        aria-label={label}
         id={id}
         onClick={() => onChange(!checked)}
         className={`
@@ -138,7 +139,7 @@ export const SettingsPanel = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-4xl mx-auto w-full">
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Settings</h1>
@@ -172,7 +173,7 @@ export const SettingsPanel = () => {
           </div>
 
           {/* Tab Content */}
-          <div className="p-6 sm:p-8">
+          <div className="p-4 sm:p-6 lg:p-8">
             {/* Profile Tab */}
             {activeTab === 'profile' && (
               <div className="space-y-6">
@@ -436,10 +437,10 @@ export const SettingsPanel = () => {
                 </div>
 
                 <div>
-                  <label htmlFor="theme" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  <label id="theme-label" htmlFor="theme" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Theme
                   </label>
-                  <div className="grid grid-cols-3 gap-3">
+                  <div className="grid grid-cols-3 gap-3" role="group" aria-labelledby="theme-label">
                     {(['light', 'dark', 'system'] as const).map((theme) => (
                       <button
                         key={theme}
