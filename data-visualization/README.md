@@ -4,53 +4,103 @@ A modern, professional data analytics dashboard built with React, TypeScript, Vi
 
 ## Features
 
-### 📊 Data Visualization
 - **KPI Cards**: Display key performance indicators with trend indicators
 - **Chart Placeholders**: Ready-to-integrate placeholders for Line, Bar, Pie, and Area charts
 - **Data Tables**: Sortable, searchable tables with pagination
-- **Professional Design**: Clean, modern interface with smooth transitions
+- **Sidebar Navigation**: Collapsible on mobile, fixed on desktop
+- **Header**: User menu dropdown and notifications
+- **Task Cards**: Color-coded priorities and status indicators
+- **Dark Mode**: Smooth theme transitions with localStorage persistence
+- **Responsive Design**: Works seamlessly on desktop, tablet, and mobile
 
-### 🎨 User Interface
-- **Dark Mode Support**: Full dark mode with system preference detection
-- **Responsive Layout**: Works seamlessly on desktop, tablet, and mobile
-- **Tailwind CSS**: Modern utility-first CSS framework
-- **Custom Color Scheme**: Professional color palette with primary blue theme
+## Prerequisites
 
-### 🔍 Data Controls
-- **Filter Panel**: Multi-select filters for Region, Status, and Category
-- **Date Range Selector**: Quick select buttons and custom date range picker
-- **Search Functionality**: Real-time search across table data
-- **Sort Capabilities**: Column-based sorting with visual indicators
+- **Node.js**: Version 18 or higher
+- **npm**: Version 9 or higher (comes with Node.js)
+- **Git**: For cloning the repository (optional)
 
-### 🚀 Performance
-- **React 18**: Latest React features and optimizations
-- **TypeScript**: Type-safe code for better developer experience
-- **Vite**: Lightning-fast build tool and development server
-- **Code Splitting**: Optimized bundle sizes
+## Setup Instructions
 
-## Getting Started
+### 1. Install Dependencies
 
-### Prerequisites
-- Node.js 18+ and npm/yarn/pnpm
+Navigate to the project directory and install all required packages:
 
-### Installation
-
-1. Navigate to the project directory:
 ```bash
 cd /Users/nkatanaeva/titled_folder/data-visualization
-```
-
-2. Install dependencies:
-```bash
 npm install
 ```
 
-3. Start the development server:
+This will install:
+- React 18.3
+- TypeScript 5.5
+- Vite 5.4
+- Tailwind CSS 3.4
+- Playwright (for E2E testing)
+- Other development dependencies
+
+### 2. Start Development Server
+
+Start the Vite development server:
+
 ```bash
 npm run dev
 ```
 
-4. Open your browser and visit `http://localhost:5173`
+The server will start on `http://localhost:5173` and automatically open in your browser.
+
+**Note**: If port 5173 is already in use, Vite will automatically use the next available port.
+
+### 3. Build for Production
+
+To create a production build:
+
+```bash
+npm run build
+```
+
+The optimized files will be in the `dist/` directory.
+
+### 4. Preview Production Build
+
+To preview the production build locally:
+
+```bash
+npm run preview
+```
+
+### 5. Run Tests
+
+Run the Playwright E2E test suite:
+
+```bash
+# Run all E2E tests
+npm run test:e2e
+
+# Run tests with interactive UI
+npm run test:e2e:ui
+
+# Run tests in headed mode (see browser)
+npm run test:e2e:headed
+
+# Debug tests step-by-step
+npm run test:e2e:debug
+```
+
+**Note**: Tests require the dev server to be running. If port 5173 is in use, use:
+
+```bash
+npm run test:e2e:clean
+```
+
+This will kill any process on port 5173 before running tests.
+
+### 6. Lint Code
+
+Check code quality with ESLint:
+
+```bash
+npm run lint
+```
 
 ## Project Structure
 
@@ -66,72 +116,37 @@ src/
 │   │   └── Dashboard.tsx        # Main dashboard layout
 │   ├── ChartPlaceholder.tsx     # Chart visualization placeholders
 │   ├── DataTable.tsx            # Sortable data table
-│   ├── FilterPanel.tsx          # Filter controls
+│   ├── FilterPanel.tsx         # Filter controls
 │   └── DateRangeSelector.tsx    # Date range picker
 ├── types/
 │   └── dashboard.ts             # TypeScript type definitions
-├── App.tsx                       # Root component with dark mode
+├── App.tsx                       # Root component
 ├── main.tsx                      # Application entry point
-└── index.css                     # Global styles with Tailwind
+└── index.css                     # Global styles
 ```
 
 ## Available Scripts
 
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm run preview` - Preview production build
-- `npm run lint` - Run ESLint
-
-## Customization
-
-### Adding Real Charts
-The chart placeholders are ready to integrate with popular charting libraries:
-
-- **Chart.js + react-chartjs-2**
-- **Recharts**
-- **Victory**
-- **D3.js**
-
-### Modifying Colors
-Update the color scheme in `tailwind.config.js`:
-
-```javascript
-theme: {
-  extend: {
-    colors: {
-      primary: {
-        // Your custom colors
-      }
-    }
-  }
-}
-```
-
-### Adding More Stats
-Add new stat widgets in `Dashboard.tsx` by extending the `statsData` array:
-
-```typescript
-{
-  title: 'Your Metric',
-  value: '$XX,XXX',
-  change: '+X.X%',
-  trend: 'up',
-  icon: YourIcon,
-  color: 'blue'
-}
-```
-
-## Dark Mode
-
-Dark mode is automatically persisted to localStorage and can be toggled via the sun/moon icon in the header. The implementation uses Tailwind's `dark:` variant and the `class` strategy.
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Start development server |
+| `npm run build` | Build for production |
+| `npm run preview` | Preview production build |
+| `npm run lint` | Run ESLint |
+| `npm run test:e2e` | Run E2E tests |
+| `npm run test:e2e:ui` | Run tests with interactive UI |
+| `npm run test:e2e:headed` | Run tests in headed mode |
+| `npm run test:e2e:debug` | Debug tests step-by-step |
+| `npm run test:e2e:clean` | Kill port 5173 and run tests |
 
 ## Technologies Used
 
 - **React 18.3** - UI library
 - **TypeScript 5.5** - Type safety
-- **Vite 5.4** - Build tool
-- **Tailwind CSS 3.4** - Styling
+- **Vite 5.4** - Build tool and dev server
+- **Tailwind CSS 3.4** - Utility-first CSS framework
 - **Lucide React** - Icon library
+- **Playwright** - E2E testing framework
 
 ## Browser Support
 
@@ -140,10 +155,10 @@ Dark mode is automatically persisted to localStorage and can be toggled via the 
 - Safari (latest)
 - Edge (latest)
 
+## Testing
+
+This project includes comprehensive E2E tests using Playwright. See `TEST_REPORT.md` for detailed test coverage and report information.
+
 ## License
 
 MIT
-
-## Support
-
-For issues or questions, please create an issue in the project repository.
