@@ -1,0 +1,203 @@
+import React, { useState } from 'react';
+import UserAvatar from './UserAvatar';
+import type { Comment, User } from './types';
+
+interface CommentSectionProps {
+  comments: Comment[];
+  currentUser: User;
+  onAddComment: (postId: string, content: string) => void;
+  onLikeComment: (commentId: string) => void;
+  postId: string;
+}
+
+const CommentSection: React.FC<CommentSectionProps> = ({
+  comments,
+  currentUser,
+  onAddComment,
+  onLikeComment,
+  postId
+}) => {
+  const [showAllComments, setShowAllComments] = useState(false);
+  const [newComment, setNewComment] = useState('');
+  const [replyingTo, setReplyingTo] = useState<string | null>(null);
+  const [replyContent, setReplyContent] = useState('');
+
+  const displayedComments = showAllComments ? comments : comments.slice(0, 3);
+  const hasMoreComments = comments.length > 3;
+
+  const formatTimeAgo = (date: Date): string => {
+    const now = new Date();
+    const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+    
+    if (diffInSeconds < 60) return 'just now';
+    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
+    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
+    if (diffInSeconds < 604800) return `${Math.floor(diffInSeconds / 86400)}d ago`;
+    return date.toLocaleDateString();
+  };
+
+  const handleSubmitComment = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (newComment.trim()) {
+      onAddComment(postId, newComment);
+      setNewComment('');
+    }
+  };
+
+  const handleSubmitReply = (e: React.FormEvent, _commentId: string) => {
+    e.preventDefault();
+    if (replyContent.trim()) {
+      // In a real app, this would handle nested replies
+      onAddComment(postId, replyContent);
+      setReplyContent('');
+      setReplyingTo(null);
+    }
+  };
+
+  return (
+    <div className="mt-4 space-y-4">
+      {/* Comment Input */}
+      <form onSubmit={handleSubmitComment} className="flex gap-2">
+        <UserAvatar user={currentUser} size="sm" />
+        <div className="flex-1 flex gap-2">
+          <input
+            type="text"
+            value={newComment}
+            onChange={(e) => setNewComment(e.target.value)}
+            placeholder="Write a comment..."
+            className="flex-1 px-3 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 text-sm"
+          />
+          {newComment.trim() && (
+            <button
+              type="submit"
+              className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-full text-sm font-medium transition-colors"
+            >
+              Post
+            </button>
+          )}
+        </div>
+      </form>
+
+      {/* Comments List */}
+      {displayedComments.length > 0 && (
+        <div className="space-y-3">
+          {displayedComments.map((comment) => (
+            <div key={comment.id} className="flex gap-3">
+              <UserAvatar user={comment.user} size="sm" />
+              <div className="flex-1">
+                <div className="bg-gray-50 dark:bg-gray-900 rounded-2xl px-4 py-2">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="font-semibold text-gray-900 dark:text-white text-sm">
+                      {comment.user.name}
+                    </span>
+                    {comment.user.verified && (
+                      <svg className="w-4 h-4 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                      </svg>
+                    )}
+                    <span className="text-xs text-gray-500 dark:text-gray-400">
+                      {formatTimeAgo(comment.timestamp)}
+                    </span>
+                  </div>
+                  <p className="text-gray-900 dark:text-white text-sm mb-2">
+                    {comment.content}
+                  </p>
+                </div>
+                <div className="flex items-center gap-4 mt-1 ml-2">
+                  <button
+                    onClick={() => onLikeComment(comment.id)}
+                    className={`flex items-center gap-1 text-xs font-medium transition-all active:scale-95 ${
+                      comment.liked
+                        ? 'text-red-500'
+                        : 'text-gray-500 dark:text-gray-400 hover:text-red-500'
+                    }`}
+                  >
+                    <svg 
+                      className={`w-4 h-4 transition-transform ${comment.liked ? 'scale-110' : ''}`}
+                      fill={comment.liked ? 'currentColor' : 'none'} 
+                      stroke="currentColor" 
+                      viewBox="0 0 24 24"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                    </svg>
+                    {comment.likes > 0 && comment.likes}
+                  </button>
+                  <button
+                    onClick={() => setReplyingTo(replyingTo === comment.id ? null : comment.id)}
+                    className="text-xs text-gray-500 dark:text-gray-400 hover:text-blue-500 font-medium transition-colors"
+                  >
+                    Reply
+                  </button>
+                </div>
+
+                {/* Reply Input */}
+                {replyingTo === comment.id && (
+                  <form onSubmit={(e) => handleSubmitReply(e, comment.id)} className="mt-2 ml-4 flex gap-2">
+                    <UserAvatar user={currentUser} size="sm" />
+                    <div className="flex-1 flex gap-2">
+                      <input
+                        type="text"
+                        value={replyContent}
+                        onChange={(e) => setReplyContent(e.target.value)}
+                        placeholder="Write a reply..."
+                        className="flex-1 px-3 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 text-sm"
+                      />
+                      {replyContent.trim() && (
+                        <button
+                          type="submit"
+                          className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-full text-sm font-medium transition-colors"
+                        >
+                          Reply
+                        </button>
+                      )}
+                    </div>
+                  </form>
+                )}
+
+                {/* Nested Replies */}
+                {comment.replies && comment.replies.length > 0 && (
+                  <div className="mt-2 ml-4 space-y-2">
+                    {comment.replies.map((reply) => (
+                      <div key={reply.id} className="flex gap-2">
+                        <UserAvatar user={reply.user} size="sm" />
+                        <div className="flex-1">
+                          <div className="bg-gray-50 dark:bg-gray-900 rounded-2xl px-3 py-2">
+                            <div className="flex items-center gap-2 mb-1">
+                              <span className="font-semibold text-gray-900 dark:text-white text-xs">
+                                {reply.user.name}
+                              </span>
+                              <span className="text-xs text-gray-500 dark:text-gray-400">
+                                {formatTimeAgo(reply.timestamp)}
+                              </span>
+                            </div>
+                            <p className="text-gray-900 dark:text-white text-xs">
+                              {reply.content}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Show More Comments */}
+      {hasMoreComments && (
+        <button
+          onClick={() => setShowAllComments(!showAllComments)}
+          className="text-sm text-blue-500 hover:text-blue-600 font-medium ml-12"
+        >
+          {showAllComments
+            ? 'Show fewer comments'
+            : `View ${comments.length - 3} more comments`}
+        </button>
+      )}
+    </div>
+  );
+};
+
+export default CommentSection;
