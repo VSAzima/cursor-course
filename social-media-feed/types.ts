@@ -13,6 +13,7 @@ export interface Comment {
   timestamp: Date;
   likes: number;
   liked: boolean;
+  replies?: Comment[];
 }
 
 export interface Post {

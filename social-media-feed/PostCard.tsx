@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import UserAvatar from './UserAvatar';
 import CommentSection from './CommentSection';
-import type { Post, User } from './types';
+import { Post, User } from './types';
 
 interface PostCardProps {
   post: Post;
@@ -21,17 +21,27 @@ const PostCard: React.FC<PostCardProps> = ({
   onLikeComment
 }) => {
   const [showComments, setShowComments] = useState(false);
+  const [imageIndex, setImageIndex] = useState(0);
 
   const formatTimeAgo = (date: Date): string => {
-    const diff = Math.floor((Date.now() - date.getTime()) / 1000);
-    if (diff < 60) return 'just now';
-    if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
-    if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
-    return `${Math.floor(diff / 86400)}d ago`;
+    const now = new Date();
+    const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+    
+    if (diffInSeconds < 60) return 'just now';
+    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
+    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
+    if (diffInSeconds < 604800) return `${Math.floor(diffInSeconds / 86400)}d ago`;
+    return date.toLocaleDateString();
+  };
+
+  const formatNumber = (num: number): string => {
+    if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
+    if (num >= 1000) return `${(num / 1000).toFixed(1)}K`;
+    return num.toString();
   };
 
   return (
-    <div data-testid={`post-card-${post.id}`} className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden mb-6">
+    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden mb-6">
       {/* Header */}
       <div className="p-4 pb-3">
         <div className="flex items-center justify-between">
@@ -59,13 +69,18 @@ const PostCard: React.FC<PostCardProps> = ({
               </div>
             </div>
           </div>
+          <button className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors">
+            <svg className="w-5 h-5 text-gray-600 dark:text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
+            </svg>
+          </button>
         </div>
       </div>
 
       {/* Content */}
       {post.content && (
         <div className="px-4 pb-3">
-          <p data-testid={`post-content-${post.id}`} className="text-gray-900 dark:text-white whitespace-pre-wrap">
+          <p className="text-gray-900 dark:text-white whitespace-pre-wrap">
             {post.content}
           </p>
         </div>
@@ -73,22 +88,66 @@ const PostCard: React.FC<PostCardProps> = ({
 
       {/* Images */}
       {post.images && post.images.length > 0 && (
-        <div className="w-full">
-          <img
-            data-testid={`post-media-${post.id}`}
-            src={post.images[0]}
-            alt="Post"
-            className="w-full h-auto object-cover"
-          />
+        <div className="relative">
+          <div className="relative w-full" style={{ aspectRatio: '16/9' }}>
+            <img
+              src={post.images[imageIndex]}
+              alt={`Post image ${imageIndex + 1}`}
+              className="w-full h-full object-cover"
+            />
+            {post.images.length > 1 && (
+              <>
+                {imageIndex > 0 && (
+                  <button
+                    onClick={() => setImageIndex(imageIndex - 1)}
+                    className="absolute left-2 top-1/2 -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-70 text-white rounded-full p-2 transition-opacity"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                    </svg>
+                  </button>
+                )}
+                {imageIndex < post.images.length - 1 && (
+                  <button
+                    onClick={() => setImageIndex(imageIndex + 1)}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-70 text-white rounded-full p-2 transition-opacity"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </button>
+                )}
+                <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
+                  {post.images.map((_, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setImageIndex(index)}
+                      className={`h-1.5 rounded-full transition-all ${
+                        index === imageIndex
+                          ? 'bg-white w-6'
+                          : 'bg-white bg-opacity-50 w-1.5'
+                      }`}
+                    />
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
         </div>
       )}
 
       {/* Stats */}
       {(post.likes > 0 || post.comments > 0 || post.shares > 0) && (
         <div className="px-4 py-2 border-t border-gray-200 dark:border-gray-700 flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
-          {post.likes > 0 && <span>{post.likes} likes</span>}
-          {post.comments > 0 && <span>{post.comments} comments</span>}
-          {post.shares > 0 && <span>{post.shares} shares</span>}
+          {post.likes > 0 && (
+            <span>{formatNumber(post.likes)} likes</span>
+          )}
+          {post.comments > 0 && (
+            <span>{formatNumber(post.comments)} comments</span>
+          )}
+          {post.shares > 0 && (
+            <span>{formatNumber(post.shares)} shares</span>
+          )}
         </div>
       )}
 
@@ -96,7 +155,6 @@ const PostCard: React.FC<PostCardProps> = ({
       <div className="px-2 py-2 border-t border-gray-200 dark:border-gray-700">
         <div className="flex items-center justify-around">
           <button
-            data-testid={`like-button-${post.id}`}
             onClick={() => onLike(post.id)}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all flex-1 justify-center active:scale-95 ${
               post.liked
@@ -115,7 +173,6 @@ const PostCard: React.FC<PostCardProps> = ({
             <span className="font-medium">Like</span>
           </button>
           <button
-            data-testid={`comment-button-${post.id}`}
             onClick={() => setShowComments(!showComments)}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all flex-1 justify-center active:scale-95 ${
               showComments
@@ -129,7 +186,6 @@ const PostCard: React.FC<PostCardProps> = ({
             <span className="font-medium">Comment</span>
           </button>
           <button
-            data-testid={`share-button-${post.id}`}
             onClick={() => onShare(post.id)}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all flex-1 justify-center active:scale-95 ${
               post.shared

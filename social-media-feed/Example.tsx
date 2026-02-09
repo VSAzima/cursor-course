@@ -1,8 +1,8 @@
 import React from 'react';
-import Feed from './components/Feed';
-import type { Post, User } from './components/types';
+import Feed from './Feed';
+import { Post, User } from './types';
 
-const App: React.FC = () => {
+const Example: React.FC = () => {
   // Current user
   const currentUser: User = {
     id: 'current-user-1',
@@ -135,7 +135,7 @@ const App: React.FC = () => {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
       <div className="max-w-4xl mx-auto px-4">
         <header className="text-center mb-8">
-          <h1 data-testid="feed-title" className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
+          <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
             Social Media Feed
           </h1>
           <p className="text-gray-600 dark:text-gray-400">
@@ -153,4 +153,4 @@ const App: React.FC = () => {
   );
 };
 
-export default App;
+export default Example;

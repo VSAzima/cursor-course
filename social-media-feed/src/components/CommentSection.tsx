@@ -17,26 +17,17 @@ const CommentSection: React.FC<CommentSectionProps> = ({
   onLikeComment,
   postId
 }) => {
-  const [showAllComments, setShowAllComments] = useState(false);
   const [newComment, setNewComment] = useState('');
-  const [replyingTo, setReplyingTo] = useState<string | null>(null);
-  const [replyContent, setReplyContent] = useState('');
-
-  const displayedComments = showAllComments ? comments : comments.slice(0, 3);
-  const hasMoreComments = comments.length > 3;
 
   const formatTimeAgo = (date: Date): string => {
-    const now = new Date();
-    const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
-    
-    if (diffInSeconds < 60) return 'just now';
-    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
-    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
-    if (diffInSeconds < 604800) return `${Math.floor(diffInSeconds / 86400)}d ago`;
-    return date.toLocaleDateString();
+    const diff = Math.floor((Date.now() - date.getTime()) / 1000);
+    if (diff < 60) return 'just now';
+    if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+    if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+    return `${Math.floor(diff / 86400)}d ago`;
   };
 
-  const handleSubmitComment = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (newComment.trim()) {
       onAddComment(postId, newComment);
@@ -44,44 +35,34 @@ const CommentSection: React.FC<CommentSectionProps> = ({
     }
   };
 
-  const handleSubmitReply = (e: React.FormEvent, _commentId: string) => {
-    e.preventDefault();
-    if (replyContent.trim()) {
-      // In a real app, this would handle nested replies
-      onAddComment(postId, replyContent);
-      setReplyContent('');
-      setReplyingTo(null);
-    }
-  };
-
   return (
     <div className="mt-4 space-y-4">
       {/* Comment Input */}
-      <form onSubmit={handleSubmitComment} className="flex gap-2">
+      <form onSubmit={handleSubmit} className="flex gap-2">
         <UserAvatar user={currentUser} size="sm" />
-        <div className="flex-1 flex gap-2">
-          <input
-            type="text"
-            value={newComment}
-            onChange={(e) => setNewComment(e.target.value)}
-            placeholder="Write a comment..."
-            className="flex-1 px-3 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 text-sm"
-          />
-          {newComment.trim() && (
-            <button
-              type="submit"
-              className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-full text-sm font-medium transition-colors"
-            >
-              Post
-            </button>
-          )}
-        </div>
+        <input
+          data-testid={`comment-input-${postId}`}
+          type="text"
+          value={newComment}
+          onChange={(e) => setNewComment(e.target.value)}
+          placeholder="Write a comment..."
+          className="flex-1 px-3 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 text-sm"
+        />
+        {newComment.trim() && (
+          <button
+            data-testid={`comment-submit-${postId}`}
+            type="submit"
+            className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-full text-sm font-medium transition-colors"
+          >
+            Post
+          </button>
+        )}
       </form>
 
       {/* Comments List */}
-      {displayedComments.length > 0 && (
+      {comments.length > 0 && (
         <div className="space-y-3">
-          {displayedComments.map((comment) => (
+          {comments.map((comment) => (
             <div key={comment.id} className="flex gap-3">
               <UserAvatar user={comment.user} size="sm" />
               <div className="flex-1">
@@ -99,102 +80,31 @@ const CommentSection: React.FC<CommentSectionProps> = ({
                       {formatTimeAgo(comment.timestamp)}
                     </span>
                   </div>
-                  <p className="text-gray-900 dark:text-white text-sm mb-2">
+                  <p data-testid={`comment-content-${comment.id}`} className="text-gray-900 dark:text-white text-sm mb-2">
                     {comment.content}
                   </p>
                 </div>
-                <div className="flex items-center gap-4 mt-1 ml-2">
-                  <button
-                    onClick={() => onLikeComment(comment.id)}
-                    className={`flex items-center gap-1 text-xs font-medium transition-all active:scale-95 ${
-                      comment.liked
-                        ? 'text-red-500'
-                        : 'text-gray-500 dark:text-gray-400 hover:text-red-500'
-                    }`}
+                <button
+                  data-testid={`comment-like-${comment.id}`}
+                  onClick={() => onLikeComment(comment.id)}
+                  className={`flex items-center gap-1 text-xs font-medium mt-1 ml-2 ${
+                    comment.liked ? 'text-red-500' : 'text-gray-500 dark:text-gray-400'
+                  }`}
+                >
+                  <svg 
+                    className="w-4 h-4"
+                    fill={comment.liked ? 'currentColor' : 'none'} 
+                    stroke="currentColor" 
+                    viewBox="0 0 24 24"
                   >
-                    <svg 
-                      className={`w-4 h-4 transition-transform ${comment.liked ? 'scale-110' : ''}`}
-                      fill={comment.liked ? 'currentColor' : 'none'} 
-                      stroke="currentColor" 
-                      viewBox="0 0 24 24"
-                    >
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                    </svg>
-                    {comment.likes > 0 && comment.likes}
-                  </button>
-                  <button
-                    onClick={() => setReplyingTo(replyingTo === comment.id ? null : comment.id)}
-                    className="text-xs text-gray-500 dark:text-gray-400 hover:text-blue-500 font-medium transition-colors"
-                  >
-                    Reply
-                  </button>
-                </div>
-
-                {/* Reply Input */}
-                {replyingTo === comment.id && (
-                  <form onSubmit={(e) => handleSubmitReply(e, comment.id)} className="mt-2 ml-4 flex gap-2">
-                    <UserAvatar user={currentUser} size="sm" />
-                    <div className="flex-1 flex gap-2">
-                      <input
-                        type="text"
-                        value={replyContent}
-                        onChange={(e) => setReplyContent(e.target.value)}
-                        placeholder="Write a reply..."
-                        className="flex-1 px-3 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 text-sm"
-                      />
-                      {replyContent.trim() && (
-                        <button
-                          type="submit"
-                          className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-full text-sm font-medium transition-colors"
-                        >
-                          Reply
-                        </button>
-                      )}
-                    </div>
-                  </form>
-                )}
-
-                {/* Nested Replies */}
-                {comment.replies && comment.replies.length > 0 && (
-                  <div className="mt-2 ml-4 space-y-2">
-                    {comment.replies.map((reply) => (
-                      <div key={reply.id} className="flex gap-2">
-                        <UserAvatar user={reply.user} size="sm" />
-                        <div className="flex-1">
-                          <div className="bg-gray-50 dark:bg-gray-900 rounded-2xl px-3 py-2">
-                            <div className="flex items-center gap-2 mb-1">
-                              <span className="font-semibold text-gray-900 dark:text-white text-xs">
-                                {reply.user.name}
-                              </span>
-                              <span className="text-xs text-gray-500 dark:text-gray-400">
-                                {formatTimeAgo(reply.timestamp)}
-                              </span>
-                            </div>
-                            <p className="text-gray-900 dark:text-white text-xs">
-                              {reply.content}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                  </svg>
+                  {comment.likes > 0 && comment.likes}
+                </button>
               </div>
             </div>
           ))}
         </div>
-      )}
-
-      {/* Show More Comments */}
-      {hasMoreComments && (
-        <button
-          onClick={() => setShowAllComments(!showAllComments)}
-          className="text-sm text-blue-500 hover:text-blue-600 font-medium ml-12"
-        >
-          {showAllComments
-            ? 'Show fewer comments'
-            : `View ${comments.length - 3} more comments`}
-        </button>
       )}
     </div>
   );
