@@ -13,12 +13,12 @@
     "test:e2e:headed": "playwright test --headed",
     "test:e2e:debug": "playwright test --debug",
     "test:e2e:setup": "playwright install chromium",
-    "test:e2e:clean": "node scripts/kill-port.js 5173 && playwright test",
-    "test:e2e:full": "playwright install chromium && node scripts/kill-port.js 5173 && playwright test",
+    "test:e2e:clean": "node scripts/kill-port.js 5186 && playwright test",
+    "test:e2e:full": "playwright install chromium && node scripts/kill-port.js 5186 && playwright test",
     "test:e2e:viewport": "playwright test e2e/viewport-tests.spec.ts --project=chromium-desktop",
     "test:e2e:errors": "playwright test e2e/error-handling.spec.ts --project=chromium-desktop",
-    "test:e2e:all": "playwright install chromium && node scripts/kill-port.js 5173 && playwright test --project=chromium-desktop",
-    "test:e2e:all-viewports": "playwright install chromium && node scripts/kill-port.js 5173 && playwright test"
+    "test:e2e:all": "playwright install chromium && node scripts/kill-port.js 5186 && playwright test --project=chromium-desktop",
+    "test:e2e:all-viewports": "playwright install chromium && node scripts/kill-port.js 5186 && playwright test"
   },
   "dependencies": {
     "lucide-react": "^0.344.0",
