@@ -9,6 +9,7 @@ import { Product } from './types';
 function App() {
   const [cart, setCart] = useState<Product[]>([]);
   const [notification, setNotification] = useState<string | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   // Sample products for demonstration
   const products: Product[] = [
@@ -84,6 +85,14 @@ function App() {
    * Handles adding a product to the cart
    */
   const handleAddToCart = (product: Product) => {
+    if (!isAuthenticated) {
+      setNotification('Please sign in to add items.');
+      setTimeout(() => {
+        setNotification(null);
+      }, 3000);
+      return;
+    }
+
     setCart(prevCart => [...prevCart, product]);
     
     // Show notification
@@ -109,29 +118,45 @@ function App() {
                 Discover our featured products
               </p>
             </div>
-            
-            {/* Cart Counter */}
-            <div className="relative">
+
+            <nav className="flex items-center gap-6" aria-label="Primary">
+              <a className="text-gray-700 hover:text-blue-600 font-medium" href="#products">Products</a>
+              <a className="text-gray-700 hover:text-blue-600 font-medium" href="#footer">About</a>
+            </nav>
+
+            <div className="flex items-center gap-3">
               <button
-                className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-                aria-label={`Shopping cart with ${cart.length} items`}
+                type="button"
+                onClick={() => setIsAuthenticated(prev => !prev)}
+                className="inline-flex items-center gap-2 border border-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-100 transition-colors"
+                aria-label={isAuthenticated ? 'Sign out' : 'Sign in'}
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-6 w-6"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
-                  />
-                </svg>
-                <span className="font-semibold">Cart ({cart.length})</span>
+                {isAuthenticated ? 'Sign out' : 'Sign in'}
               </button>
+
+              {/* Cart Counter */}
+              <div className="relative">
+                <button
+                  className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                  aria-label={`Shopping cart with ${cart.length} items`}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-6 w-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+                    />
+                  </svg>
+                  <span className="font-semibold">Cart ({cart.length})</span>
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -160,9 +185,9 @@ function App() {
       )}
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+      <main id="products" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
         {/* Product Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+        <div data-testid="product-grid" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
           {products.map(product => (
             <ProductCard
               key={product.id}
@@ -174,7 +199,7 @@ function App() {
       </main>
 
       {/* Footer */}
-      <footer className="bg-white border-t border-gray-200 mt-12">
+      <footer id="footer" className="bg-white border-t border-gray-200 mt-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="text-center">
             <p className="text-gray-600">
