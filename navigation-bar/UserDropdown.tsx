@@ -115,6 +115,7 @@ const UserDropdown: React.FC<UserDropdownProps> = ({
 
       {/* Dropdown Menu */}
       <div
+        data-testid="user-dropdown-menu"
         className={`absolute right-0 mt-2 w-56 bg-white dark:bg-gray-800 rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 transition-all duration-200 origin-top-right z-50 ${
           isOpen 
             ? 'opacity-100 scale-100 translate-y-0' 
@@ -141,7 +142,10 @@ const UserDropdown: React.FC<UserDropdownProps> = ({
             }
 
             const content = (
-              <div className="flex items-center space-x-3 px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors cursor-pointer">
+              <div
+                data-testid={`user-menu-item-${item.id}`}
+                className="flex items-center space-x-3 px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors cursor-pointer"
+              >
                 {item.icon && (
                   <span className="text-gray-500 dark:text-gray-400">
                     {item.icon}

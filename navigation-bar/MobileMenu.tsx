@@ -57,6 +57,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({
     <>
       {/* Backdrop */}
       <div
+        data-testid="mobile-menu-backdrop"
         className={`fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-40 transition-opacity duration-300 lg:hidden ${
           isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
         }`}
@@ -66,6 +67,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({
 
       {/* Slide-in Menu */}
       <div
+        data-testid="mobile-menu-panel"
         className={`fixed top-0 right-0 h-full w-80 bg-white dark:bg-gray-900 shadow-2xl z-50 transform transition-transform duration-300 ease-in-out lg:hidden ${
           isOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
@@ -112,7 +114,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({
                 </div>
               )}
               <div className="flex-1 min-w-0">
-                <p className="text-base font-semibold text-gray-900 dark:text-white truncate">
+                <p data-testid="mobile-menu-user-name" className="text-base font-semibold text-gray-900 dark:text-white truncate">
                   {user.name}
                 </p>
                 <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
@@ -129,7 +131,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({
         )}
 
         {/* Navigation Items */}
-        <nav className="flex-1 overflow-y-auto p-4">
+        <nav data-testid="mobile-nav" className="flex-1 overflow-y-auto p-4">
           <ul className="space-y-1">
             {navItems.map((item) => {
               const isActive = item.href.startsWith('#') && 

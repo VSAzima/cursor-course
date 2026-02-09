@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo, useState } from 'react';
 import Navbar from './Navbar';
 import { NavItem, User } from './types';
 
@@ -66,16 +66,24 @@ const Example: React.FC = () => {
     avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop'
   };
 
+  const [isAuthenticated, setIsAuthenticated] = useState(true);
+  const [lastSearch, setLastSearch] = useState<string | null>(null);
+  const [searchResults, setSearchResults] = useState<string[]>([]);
+  const [message, setMessage] = useState<string | null>(null);
+
+  const activeUser = useMemo(() => (isAuthenticated ? user : undefined), [isAuthenticated]);
+
   // Handle search
   const handleSearch = (query: string) => {
-    console.log('Searching for:', query);
-    // Implement your search logic here
+    setLastSearch(query);
+    setSearchResults([`Result for: ${query}`, `Another match for: ${query}`]);
+    setMessage(`Search completed for "${query}"`);
   };
 
   // Handle logout
   const handleLogout = () => {
-    console.log('Logging out...');
-    // Implement your logout logic here
+    setIsAuthenticated(false);
+    setMessage('Signed out successfully');
   };
 
   return (
@@ -83,7 +91,7 @@ const Example: React.FC = () => {
       <Navbar
         logoText="MyBrand"
         navItems={navItems}
-        user={user}
+        user={activeUser}
         onSearch={handleSearch}
         searchPlaceholder="Search for products, articles, or help..."
         onLogout={handleLogout}
@@ -94,6 +102,67 @@ const Example: React.FC = () => {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+          <div className="text-sm text-gray-600 dark:text-gray-300">
+            Status: {isAuthenticated ? 'Signed in' : 'Signed out'}
+          </div>
+          <div className="flex items-center gap-3">
+            {isAuthenticated ? (
+              <button
+                onClick={handleLogout}
+                className="px-4 py-2 rounded-lg bg-gray-200 dark:bg-gray-800 text-gray-800 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-700 transition-colors"
+              >
+                Sign out
+              </button>
+            ) : (
+              <button
+                onClick={() => {
+                  setIsAuthenticated(true);
+                  setMessage('Signed in successfully');
+                }}
+                className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors"
+              >
+                Sign in
+              </button>
+            )}
+            <button
+              onClick={() => {
+                setSearchResults([]);
+                setLastSearch(null);
+                setMessage('Search cleared');
+              }}
+              className="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+            >
+              Clear results
+            </button>
+          </div>
+        </div>
+
+        {message && (
+          <div className="mb-8 rounded-lg bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-200 px-4 py-3">
+            {message}
+          </div>
+        )}
+
+        <div className="mb-12" aria-live="polite">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+            Search results
+          </h2>
+          {lastSearch ? (
+            <ul data-testid="search-results-list" className="space-y-2 text-sm text-gray-600 dark:text-gray-300">
+              {searchResults.map((item) => (
+                <li key={item} className="bg-white dark:bg-gray-800 rounded-lg px-4 py-2">
+                  {item}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p data-testid="search-results-empty" className="text-sm text-gray-500 dark:text-gray-400">
+              No search performed yet.
+            </p>
+          )}
+        </div>
+
         {/* Home Section */}
         <section id="home">
           <div className="text-center mb-12">

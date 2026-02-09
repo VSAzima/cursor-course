@@ -93,7 +93,7 @@ const Navbar: React.FC<NavbarProps> = ({
               </a>
 
               {/* Desktop Navigation */}
-              <ul className="hidden lg:flex items-center space-x-1">
+              <ul data-testid="desktop-nav" className="hidden lg:flex items-center space-x-1">
                 {navItems.map((item) => {
                   const isActive = item.href.startsWith('#') && 
                                    item.href.substring(1) === activeSection;
@@ -128,12 +128,14 @@ const Navbar: React.FC<NavbarProps> = ({
               {/* Search Bar */}
               <form 
                 onSubmit={handleSearchSubmit}
+                data-testid="search-form"
                 className={`hidden md:flex items-center transition-all duration-300 ${
                   isSearchFocused ? 'w-72' : 'w-64'
                 }`}
               >
                 <div className="relative w-full">
                   <input
+                    data-testid="search-input"
                     type="text"
                     placeholder={searchPlaceholder}
                     value={searchQuery}
@@ -163,6 +165,7 @@ const Navbar: React.FC<NavbarProps> = ({
                     <button
                       type="button"
                       onClick={() => setSearchQuery('')}
+                      aria-label="Clear search"
                       className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
