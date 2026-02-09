@@ -75,7 +75,6 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit }) => {
       {...listeners}
       {...attributes}
       onClick={handleClick}
-      data-testid={`task-card-${task.id}`}
       className={`bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 mb-3 cursor-grab active:cursor-grabbing hover:shadow-md transition-shadow duration-200 ${
         isDragging ? 'z-50' : onEdit ? 'hover:border-blue-400 dark:hover:border-blue-500' : ''
       }`}
@@ -90,7 +89,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit }) => {
       </div>
 
       {/* Task Title */}
-      <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-2" data-testid={`task-title-${task.id}`}>
+      <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-2">
         {task.title}
       </h3>
 

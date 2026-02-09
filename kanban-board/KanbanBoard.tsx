@@ -1,21 +1,17 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import {
   DndContext,
+  DragEndEvent,
   DragOverlay,
+  DragStartEvent,
   PointerSensor,
   useSensor,
   useSensors,
 } from '@dnd-kit/core';
-import type {
-  DragEndEvent,
-  DragStartEvent,
-} from '@dnd-kit/core';
-import { BoardColumn } from './BoardColumn';
-import type { ColumnId } from './BoardColumn';
-import type { Task, Priority } from './TaskCard';
+import { BoardColumn, ColumnId } from './BoardColumn';
+import { Task, Priority } from './TaskCard';
 import { TaskModal } from './AddTaskModal';
-import { UserManagement } from './UserManagement';
-import type { User } from './UserManagement';
+import { UserManagement, User } from './UserManagement';
 
 const STORAGE_KEY = 'kanban-board-tasks';
 const USERS_STORAGE_KEY = 'kanban-board-users';
@@ -185,23 +181,9 @@ const saveUsersToStorage = (users: User[]): void => {
 
 export const KanbanBoard: React.FC = () => {
   // Load tasks from localStorage on mount, fallback to initialTasks
-  const [tasks, setTasks] = useState<Task[]>(() => {
-    try {
-      return loadTasksFromStorage();
-    } catch (error) {
-      console.error('Error initializing tasks:', error);
-      return initialTasks;
-    }
-  });
+  const [tasks, setTasks] = useState<Task[]>(() => loadTasksFromStorage());
   // Load users from localStorage on mount, fallback to initialUsers
-  const [users, setUsers] = useState<User[]>(() => {
-    try {
-      return loadUsersFromStorage();
-    } catch (error) {
-      console.error('Error initializing users:', error);
-      return initialUsers;
-    }
-  });
+  const [users, setUsers] = useState<User[]>(() => loadUsersFromStorage());
   const [activeTask, setActiveTask] = useState<Task | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
@@ -388,8 +370,8 @@ export const KanbanBoard: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 p-6" data-testid="kanban-root">
-      <div className="max-w-7xl mx-auto" data-testid="kanban-container">
+    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 p-6">
+      <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-6">
           <div className="flex items-center justify-between mb-4">
@@ -403,7 +385,6 @@ export const KanbanBoard: React.FC = () => {
             </div>
             <div className="flex gap-2">
               <button
-                data-testid="team-button"
                 onClick={() => setIsUserManagementOpen(true)}
                 className="px-4 py-2 bg-gray-600 dark:bg-gray-500 text-white rounded-lg hover:bg-gray-700 dark:hover:bg-gray-600 transition-colors font-medium shadow-sm"
                 title="Manage team members"
@@ -411,7 +392,6 @@ export const KanbanBoard: React.FC = () => {
                 👥 Team
               </button>
               <button
-                data-testid="add-task-button"
                 onClick={() => setIsModalOpen(true)}
                 className="px-4 py-2 bg-blue-600 dark:bg-blue-500 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors font-medium shadow-sm"
               >
@@ -421,7 +401,7 @@ export const KanbanBoard: React.FC = () => {
           </div>
 
           {/* Filter and Search Bar */}
-          <div className="flex flex-wrap gap-4 items-end bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700" data-testid="filters-bar">
+          <div className="flex flex-wrap gap-4 items-end bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
             {/* Search Input */}
             <div className="flex-1 min-w-[200px]">
               <label
@@ -432,7 +412,6 @@ export const KanbanBoard: React.FC = () => {
               </label>
               <div className="relative">
                 <input
-                  data-testid="search-input"
                   type="text"
                   id="search"
                   value={searchQuery}
@@ -465,7 +444,6 @@ export const KanbanBoard: React.FC = () => {
                 Priority
               </label>
               <select
-                data-testid="priority-filter"
                 id="priority-filter"
                 value={filterPriority}
                 onChange={(e) => setFilterPriority(e.target.value as Priority | 'all')}
@@ -488,7 +466,6 @@ export const KanbanBoard: React.FC = () => {
                 Assignee
               </label>
               <select
-                data-testid="assignee-filter"
                 id="assignee-filter"
                 value={filterAssignee}
                 onChange={(e) => setFilterAssignee(e.target.value)}
@@ -506,7 +483,6 @@ export const KanbanBoard: React.FC = () => {
             {/* Clear Filters Button */}
             {(searchQuery !== '' || filterPriority !== 'all' || filterAssignee !== 'all') && (
               <button
-                data-testid="clear-filters"
                 onClick={() => {
                   setSearchQuery('');
                   setFilterPriority('all');
@@ -526,7 +502,7 @@ export const KanbanBoard: React.FC = () => {
           onDragStart={handleDragStart}
           onDragEnd={handleDragEnd}
         >
-          <div className="flex gap-4 overflow-x-auto pb-4" data-testid="columns-container">
+          <div className="flex gap-4 overflow-x-auto pb-4">
             {columns.map((column) => (
               <BoardColumn
                 key={column.id}

@@ -1,7 +1,6 @@
 import React from 'react';
 import { useDroppable } from '@dnd-kit/core';
-import { TaskCard } from './TaskCard';
-import type { Task } from './TaskCard';
+import { TaskCard, Task } from './TaskCard';
 
 export type ColumnId = 'todo' | 'in-progress' | 'done';
 
@@ -32,15 +31,14 @@ export const BoardColumn: React.FC<BoardColumnProps> = ({ id, title, tasks, onTa
   return (
     <div
       ref={setNodeRef}
-      data-testid={`column-${id}`}
       className={`flex-1 min-w-[280px] rounded-lg border-2 ${columnStyles[id]} p-4 transition-colors ${
         isOver ? 'ring-2 ring-blue-500 dark:ring-blue-400 ring-offset-2' : ''
       }`}
     >
       {/* Column Header */}
       <div className="flex items-center justify-between mb-4">
-        <h2 className={`text-lg font-bold ${headerStyles[id]}`} data-testid={`column-title-${id}`}>{title}</h2>
-        <span className="px-2 py-1 text-xs font-semibold rounded-full bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400" data-testid={`column-count-${id}`}>
+        <h2 className={`text-lg font-bold ${headerStyles[id]}`}>{title}</h2>
+        <span className="px-2 py-1 text-xs font-semibold rounded-full bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400">
           {tasks.length}
         </span>
       </div>

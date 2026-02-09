@@ -46,7 +46,7 @@ export const UserManagement: React.FC<UserManagementProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 dark:bg-opacity-70" data-testid="user-modal">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 dark:bg-opacity-70">
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md mx-4 p-6 max-h-[80vh] overflow-y-auto">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">
@@ -87,7 +87,6 @@ export const UserManagement: React.FC<UserManagementProps> = ({
                 Name *
               </label>
               <input
-                data-testid="user-name-input"
                 type="text"
                 id="user-name"
                 value={newUserName}
@@ -105,7 +104,6 @@ export const UserManagement: React.FC<UserManagementProps> = ({
                 Email (optional)
               </label>
               <input
-                data-testid="user-email-input"
                 type="email"
                 id="user-email"
                 value={newUserEmail}
@@ -115,7 +113,6 @@ export const UserManagement: React.FC<UserManagementProps> = ({
               />
             </div>
             <button
-              data-testid="add-user-submit"
               type="submit"
               className="w-full px-4 py-2 text-sm font-medium text-white bg-blue-600 dark:bg-blue-500 rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors"
             >
@@ -156,7 +153,6 @@ export const UserManagement: React.FC<UserManagementProps> = ({
                     </div>
                   </div>
                   <button
-                    data-testid={`remove-user-${user.id}`}
                     onClick={() => onRemoveUser(user.id)}
                     className="text-red-500 hover:text-red-700 dark:hover:text-red-400 transition-colors p-1"
                     aria-label={`Remove ${user.name}`}
