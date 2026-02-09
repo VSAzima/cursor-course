@@ -53,6 +53,7 @@ function FilterPanel({
                 value={option.value}
                 checked={selectedCategory === option.value}
                 onChange={(e) => onCategoryChange(e.target.value)}
+                data-testid={`filter-category-${option.value}`}
                 className="w-4 h-4 text-primary-600 focus:ring-2 focus:ring-primary-500 border-gray-300 dark:border-gray-600"
               />
               <span className="text-sm text-gray-700 dark:text-gray-300 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
@@ -80,6 +81,7 @@ function FilterPanel({
                 value={option.value}
                 checked={selectedStatus === option.value}
                 onChange={(e) => onStatusChange(e.target.value)}
+                data-testid={`filter-status-${option.value}`}
                 className="w-4 h-4 text-primary-600 focus:ring-2 focus:ring-primary-500 border-gray-300 dark:border-gray-600"
               />
               <span className="text-sm text-gray-700 dark:text-gray-300 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
@@ -96,6 +98,7 @@ function FilterPanel({
           onCategoryChange('all');
           onStatusChange('all');
         }}
+        data-testid="clear-filters"
         className="w-full px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors"
       >
         Clear All Filters

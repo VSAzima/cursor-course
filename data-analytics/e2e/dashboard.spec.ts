@@ -66,10 +66,7 @@ test.describe('Dark Mode', () => {
     );
 
     // Click dark mode toggle
-    const darkModeButton = page.locator('button[aria-label*="dark mode"], button[aria-label*="Dark mode"]').or(
-      page.locator('button').filter({ has: page.locator('svg') }).nth(2)
-    );
-    
+    const darkModeButton = page.getByTestId('dark-mode-toggle');
     await darkModeButton.click();
     await page.waitForTimeout(500);
 
@@ -80,7 +77,7 @@ test.describe('Dark Mode', () => {
 
   test('should persist dark mode preference', async ({ page }) => {
     // Toggle dark mode
-    const darkModeButton = page.locator('button').filter({ has: page.locator('svg') }).nth(2);
+    const darkModeButton = page.getByTestId('dark-mode-toggle');
     await darkModeButton.click();
     await page.waitForTimeout(500);
 
@@ -104,18 +101,18 @@ test.describe('Filter Functionality', () => {
 
   test('should filter by category', async ({ page }) => {
     // Open sidebar on mobile if needed
-    const menuButton = page.locator('button').filter({ has: page.locator('svg') }).first();
+    const menuButton = page.getByTestId('sidebar-toggle');
     if (await menuButton.isVisible()) {
       await menuButton.click();
       await page.waitForTimeout(300);
     }
 
     // Select Marketing category
-    await page.locator('input[value="marketing"]').check();
+    await page.getByTestId('filter-category-marketing').check();
     await page.waitForTimeout(1000); // Wait for filter to apply
 
     // Verify filter is applied
-    await expect(page.locator('text=Marketing')).toBeVisible();
+    await expect(page.getByTestId('active-filters')).toContainText('Marketing');
     
     // Check table shows filtered results
     const tableRows = page.locator('tbody tr');
@@ -125,57 +122,57 @@ test.describe('Filter Functionality', () => {
 
   test('should filter by status', async ({ page }) => {
     // Open sidebar on mobile if needed
-    const menuButton = page.locator('button').filter({ has: page.locator('svg') }).first();
+    const menuButton = page.getByTestId('sidebar-toggle');
     if (await menuButton.isVisible()) {
       await menuButton.click();
       await page.waitForTimeout(300);
     }
 
     // Select Active status
-    await page.locator('input[value="active"]').check();
+    await page.getByTestId('filter-status-active').check();
     await page.waitForTimeout(1000);
 
     // Verify filter is applied
-    await expect(page.locator('text=Active')).toBeVisible();
+    await expect(page.getByTestId('active-filters')).toContainText('Active');
   });
 
   test('should show active filters indicator', async ({ page }) => {
     // Open sidebar
-    const menuButton = page.locator('button').filter({ has: page.locator('svg') }).first();
+    const menuButton = page.getByTestId('sidebar-toggle');
     if (await menuButton.isVisible()) {
       await menuButton.click();
       await page.waitForTimeout(300);
     }
 
     // Apply filter
-    await page.locator('input[value="sales"]').check();
+    await page.getByTestId('filter-category-sales').check();
     await page.waitForTimeout(1000);
 
     // Verify active filters indicator appears
-    await expect(page.locator('text=Active filters')).toBeVisible();
+    await expect(page.getByTestId('active-filters')).toBeVisible();
   });
 
   test('should clear all filters', async ({ page }) => {
     // Open sidebar
-    const menuButton = page.locator('button').filter({ has: page.locator('svg') }).first();
+    const menuButton = page.getByTestId('sidebar-toggle');
     if (await menuButton.isVisible()) {
       await menuButton.click();
       await page.waitForTimeout(300);
     }
 
     // Apply filters
-    await page.locator('input[value="marketing"]').check();
+    await page.getByTestId('filter-category-marketing').check();
     await page.waitForTimeout(500);
-    await page.locator('input[value="active"]').check();
+    await page.getByTestId('filter-status-active').check();
     await page.waitForTimeout(1000);
 
     // Clear filters
-    await page.locator('button:has-text("Clear All Filters")').click();
+    await page.getByTestId('clear-filters').click();
     await page.waitForTimeout(1000);
 
     // Verify filters are cleared
-    await expect(page.locator('input[value="all"]').first()).toBeChecked();
-    await expect(page.locator('input[value="all"]').nth(1)).toBeChecked();
+    await expect(page.getByTestId('filter-category-all')).toBeChecked();
+    await expect(page.getByTestId('filter-status-all')).toBeChecked();
   });
 });
 
@@ -227,7 +224,7 @@ test.describe('Data Table', () => {
   });
 
   test('should search table data', async ({ page }) => {
-    const searchInput = page.locator('input[placeholder*="Search"]');
+    const searchInput = page.getByTestId('table-search');
     await searchInput.fill('Marketing');
     await page.waitForTimeout(500);
 
@@ -239,9 +236,9 @@ test.describe('Data Table', () => {
 
   test('should paginate table', async ({ page }) => {
     // Check if pagination exists
-    const pagination = page.locator('text=/Page \\d+ of \\d+/');
+    const pagination = page.getByTestId('pagination-page');
     if (await pagination.isVisible()) {
-      const nextButton = page.locator('button').filter({ has: page.locator('svg[class*="ChevronRight"]') });
+      const nextButton = page.getByTestId('pagination-next');
       if (await nextButton.isEnabled()) {
         await nextButton.click();
         await page.waitForTimeout(500);
@@ -253,12 +250,12 @@ test.describe('Data Table', () => {
   });
 
   test('should show empty state when no results', async ({ page }) => {
-    const searchInput = page.locator('input[placeholder*="Search"]');
+    const searchInput = page.getByTestId('table-search');
     await searchInput.fill('NonExistentSearchTerm12345');
     await page.waitForTimeout(500);
 
     // Check for empty state
-    const emptyState = page.locator('text=No data found');
+    const emptyState = page.getByTestId('table-empty');
     await expect(emptyState).toBeVisible();
   });
 });
@@ -271,14 +268,14 @@ test.describe('Loading States', () => {
 
   test('should show loading skeletons when filters change', async ({ page }) => {
     // Open sidebar
-    const menuButton = page.locator('button').filter({ has: page.locator('svg') }).first();
+    const menuButton = page.getByTestId('sidebar-toggle');
     if (await menuButton.isVisible()) {
       await menuButton.click();
       await page.waitForTimeout(300);
     }
 
     // Change filter - should trigger loading
-    await page.locator('input[value="sales"]').check();
+    await page.getByTestId('filter-category-sales').check();
     
     // Check for skeleton loaders (they appear briefly)
     const skeletons = page.locator('[class*="animate-pulse"]');
@@ -290,7 +287,7 @@ test.describe('Loading States', () => {
   });
 
   test('should show loading overlay on refresh', async ({ page }) => {
-    const refreshButton = page.locator('button').filter({ has: page.locator('svg[class*="RefreshCw"]') });
+    const refreshButton = page.getByTestId('refresh-button');
     await refreshButton.click();
 
     // Check for loading overlay
@@ -310,11 +307,11 @@ test.describe('Responsive Design', () => {
     await page.waitForSelector('text=Analytics Dashboard');
 
     // Verify mobile menu button is visible
-    const menuButton = page.locator('button').filter({ has: page.locator('svg[class*="Menu"]') });
+    const menuButton = page.getByTestId('sidebar-toggle');
     await expect(menuButton).toBeVisible();
 
     // Verify sidebar is hidden initially
-    const sidebar = page.locator('aside');
+    const sidebar = page.getByTestId('sidebar');
     await expect(sidebar).toHaveClass(/-translate-x-full/);
   });
 
@@ -323,12 +320,12 @@ test.describe('Responsive Design', () => {
     await page.goto('/');
     await page.waitForSelector('text=Analytics Dashboard');
 
-    const menuButton = page.locator('button').filter({ has: page.locator('svg[class*="Menu"]') });
+    const menuButton = page.getByTestId('sidebar-toggle');
     await menuButton.click();
     await page.waitForTimeout(300);
 
     // Verify sidebar is visible
-    const sidebar = page.locator('aside');
+    const sidebar = page.getByTestId('sidebar');
     await expect(sidebar).toHaveClass(/translate-x-0/);
   });
 
@@ -349,21 +346,17 @@ test.describe('Header Actions', () => {
   });
 
   test('should have refresh button', async ({ page }) => {
-    const refreshButton = page.locator('button[title*="Refresh"], button').filter({ 
-      has: page.locator('svg[class*="RefreshCw"]') 
-    });
+    const refreshButton = page.getByTestId('refresh-button');
     await expect(refreshButton).toBeVisible();
   });
 
   test('should have export button', async ({ page }) => {
-    const exportButton = page.locator('button[title*="Export"], button').filter({ 
-      has: page.locator('svg[class*="Download"]') 
-    });
+    const exportButton = page.getByTestId('export-button');
     await expect(exportButton).toBeVisible();
   });
 
   test('should have dark mode toggle', async ({ page }) => {
-    const darkModeButton = page.locator('button').filter({ has: page.locator('svg') }).nth(2);
+    const darkModeButton = page.getByTestId('dark-mode-toggle');
     await expect(darkModeButton).toBeVisible();
   });
 });

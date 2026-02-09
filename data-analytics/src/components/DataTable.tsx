@@ -65,6 +65,7 @@ function DataTable({ selectedCategory = 'all', selectedStatus = 'all' }: DataTab
                 setSearchTerm(e.target.value);
                 setCurrentPage(1);
               }}
+              data-testid="table-search"
               className="pl-9 sm:pl-10 pr-3 sm:pr-4 py-2 w-full sm:w-64 text-sm sm:text-base border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
             />
           </div>
@@ -97,7 +98,7 @@ function DataTable({ selectedCategory = 'all', selectedStatus = 'all' }: DataTab
             {currentData.length === 0 ? (
               <tr>
                 <td colSpan={5} className="px-6 py-12 text-center">
-                  <div className="flex flex-col items-center justify-center gap-2">
+                  <div data-testid="table-empty" className="flex flex-col items-center justify-center gap-2">
                     <p className="text-sm font-medium text-gray-900 dark:text-white">
                       No data found
                     </p>
@@ -111,6 +112,7 @@ function DataTable({ selectedCategory = 'all', selectedStatus = 'all' }: DataTab
               currentData.map((item) => (
               <tr
                 key={item.id}
+                data-testid="table-row"
                 className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
               >
                 <td className="px-3 sm:px-4 md:px-6 py-3 sm:py-4">
@@ -150,24 +152,26 @@ function DataTable({ selectedCategory = 'all', selectedStatus = 'all' }: DataTab
       {/* Pagination */}
       <div className="px-4 sm:px-5 md:px-6 py-3 sm:py-4 border-t border-gray-200 dark:border-gray-700">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0">
-          <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
+          <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400" data-testid="pagination-info">
             Showing {startIndex + 1} to {Math.min(endIndex, filteredData.length)} of{' '}
             {filteredData.length} results
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2" data-testid="pagination-controls">
             <button
               onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
               disabled={currentPage === 1}
+              data-testid="pagination-prev"
               className="p-1.5 sm:p-2 rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
-            <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 px-1 sm:px-2">
+            <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 px-1 sm:px-2" data-testid="pagination-page">
               Page {currentPage} of {totalPages}
             </span>
             <button
               onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
               disabled={currentPage === totalPages}
+              data-testid="pagination-next"
               className="p-1.5 sm:p-2 rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />

@@ -140,6 +140,7 @@ function Dashboard({ darkMode, onToggleDarkMode }: DashboardProps) {
             <div className="flex items-center gap-2 sm:gap-4 min-w-0 flex-1">
               <button
                 onClick={() => setSidebarOpen(!sidebarOpen)}
+                data-testid="sidebar-toggle"
                 className="lg:hidden p-1.5 sm:p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex-shrink-0"
               >
                 {sidebarOpen ? (
@@ -158,6 +159,7 @@ function Dashboard({ darkMode, onToggleDarkMode }: DashboardProps) {
               <button
                 onClick={handleRefresh}
                 disabled={isRefreshing}
+                data-testid="refresh-button"
                 className="p-1.5 sm:p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed relative"
                 title="Refresh data"
               >
@@ -167,6 +169,7 @@ function Dashboard({ darkMode, onToggleDarkMode }: DashboardProps) {
               </button>
               <button
                 onClick={handleExport}
+                data-testid="export-button"
                 className="p-1.5 sm:p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                 title="Export data"
               >
@@ -174,6 +177,7 @@ function Dashboard({ darkMode, onToggleDarkMode }: DashboardProps) {
               </button>
               <button
                 onClick={onToggleDarkMode}
+                data-testid="dark-mode-toggle"
                 className="p-1.5 sm:p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                 aria-label="Toggle dark mode"
               >
@@ -191,6 +195,7 @@ function Dashboard({ darkMode, onToggleDarkMode }: DashboardProps) {
       <div className="flex">
         {/* Sidebar - Filters */}
         <aside
+          data-testid="sidebar"
           className={`
             fixed lg:sticky top-14 sm:top-16 left-0 z-30 h-[calc(100vh-3.5rem)] sm:h-[calc(100vh-4rem)]
             w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700
@@ -230,7 +235,10 @@ function Dashboard({ darkMode, onToggleDarkMode }: DashboardProps) {
           {/* Active Filters Indicator */}
           {hasActiveFilters && (
             <div className="mb-4 p-3 sm:p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
-              <div className="flex flex-wrap items-center gap-2 text-xs sm:text-sm text-blue-700 dark:text-blue-300">
+              <div
+                data-testid="active-filters"
+                className="flex flex-wrap items-center gap-2 text-xs sm:text-sm text-blue-700 dark:text-blue-300"
+              >
                 <span className="font-medium">Active filters:</span>
                 {selectedCategory !== 'all' && (
                   <span className="px-2 py-1 bg-blue-100 dark:bg-blue-900/40 rounded text-xs sm:text-sm">
